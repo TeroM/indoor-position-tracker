@@ -11,6 +11,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.ImageView;
+import android.view.Menu;
 
 
 
@@ -39,6 +40,7 @@ public class MainActivity extends Activity implements OnTouchListener {
         ImageView view = (ImageView) findViewById(R.id.imageView);
         view.setOnTouchListener(this);
     }
+   
 
     public boolean onTouch(View v, MotionEvent event) {
         ImageView view = (ImageView) v;
@@ -105,7 +107,10 @@ public class MainActivity extends Activity implements OnTouchListener {
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_main, menu);
+        //getMenuInflater().inflate(R.menu.activity_main, menu);   	
+    	  menu.add(1, 1, 0, "RESET SCAN");
+    	  menu.add(1, 2, 1, "OPTIONS");
+    	  menu.add(1, 3, 2, "EXIT");    	     
         return true;
     }
 }

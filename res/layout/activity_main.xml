@@ -13,6 +13,7 @@
       android:src="@drawable/kerros"
       android:scaleType="matrix">
    </ImageView>
+   
 </FrameLayout>
     
 </RelativeLayout>
