@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnLongClickListener;
 import android.view.View.OnTouchListener;
 
 import com.inte.indoorpositiontracker.MapView;
@@ -19,6 +18,7 @@ public class MainActivity extends Activity implements OnTouchListener {
         MapView view = (MapView) findViewById(R.id.mapView);
         view.setOnTouchListener(this);
     }
+   
 
     public boolean onTouch(View v, MotionEvent event) {
     	v.onTouchEvent(event);
@@ -28,7 +28,10 @@ public class MainActivity extends Activity implements OnTouchListener {
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_main, menu);
+        //getMenuInflater().inflate(R.menu.activity_main, menu);   	
+    	  menu.add(1, 1, 0, "RESET SCAN");
+    	  menu.add(1, 2, 1, "OPTIONS");
+    	  menu.add(1, 3, 2, "EXIT");    	     
         return true;
     }
 
