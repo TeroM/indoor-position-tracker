@@ -42,6 +42,9 @@ public class MapView extends ImageView {
 	private float relativeX,relativeY;
 	
 	private ArrayList<WifiPointView> wifiPoints;
+	
+	
+	private long touchStarted;
 
 	public MapView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -83,66 +86,104 @@ public class MapView extends ImageView {
 	public boolean onTouchEvent(MotionEvent event) {
 		super.onTouchEvent(event);
 
-		// Handle touch events here...
-		switch (event.getAction() & MotionEvent.ACTION_MASK) {
-		case MotionEvent.ACTION_DOWN:
-			this.savedMatrix.set(this.matrix);
-			this.start.set(event.getX(), event.getY());
-			Log.d(this.TAG, "mode=DRAG");
-			this.mode = DRAG;
-			break;
-		case MotionEvent.ACTION_POINTER_DOWN:
-			this.oldDist = this.spacing(event);
-			Log.d(this.TAG, "oldDist=" + this.oldDist);
-			if (this.oldDist > 10f) {
-				this.savedMatrix.set(this.matrix);
-				this.midPoint(this.mid, event);
-				this.mode = ZOOM;
-				Log.d(this.TAG, "mode=ZOOM");
-			}
-			break;
-		case MotionEvent.ACTION_UP:
-		case MotionEvent.ACTION_POINTER_UP:
-			this.mode = NONE;
-			Log.d(this.TAG, "mode=NONE");
-
-			/*
-			 * Add new wifi-fingerprint-ball
-			 * */
-			
-			this.matrix.getValues(this.matrixValues);
-			
-			this.relativeX = (event.getX() - this.matrixValues[2]) / this.matrixValues[0];
-			this.relativeY = (event.getY() - this.matrixValues[5]) / this.matrixValues[4];
-			
-			createNewWifiPointOnMap(this.relativeX,this.relativeY);
-			invalidate();
-
-
-			break;
-		case MotionEvent.ACTION_MOVE:
-			if (mode == DRAG) {
-				// ...
-				this.matrix.set(this.savedMatrix);
-				this.matrix.postTranslate(event.getX() - start.x,
-						event.getY() - start.y);
-			}
-			else if (mode == ZOOM) {
-				float newDist = this.spacing(event);
-				Log.d(TAG, "newDist=" + newDist);
-				if (newDist > 10f) {
-					this.matrix.set(this.savedMatrix);
-					float scale = newDist / this.oldDist;
-					this.matrix.postScale(scale, scale, this.mid.x, this.mid.y);
-				}
-			}
-			break;
-		}
-
-		this.setImageMatrix(this.matrix);
+        // Handle touch events here...
+        switch (event.getAction() & MotionEvent.ACTION_MASK) {
+            case MotionEvent.ACTION_DOWN:
+                onTouchStart(event);
+                break;
+            case MotionEvent.ACTION_POINTER_DOWN:
+                onMultiTouchStart(event);
+                break;
+            case MotionEvent.ACTION_UP:
+                onTouchEnd(event);
+                break;
+            case MotionEvent.ACTION_POINTER_UP:
+                onMultiTouchEnd(event);
+                break;
+            case MotionEvent.ACTION_MOVE:
+                onTouchMove(event);
+                break;
+        }
+        
 		return true;
 	}
 
+	public void onTap(MotionEvent event) {
+        /*
+         * Add new wifi-fingerprint-ball
+         * */
+        
+        this.matrix.getValues(this.matrixValues);
+        
+        this.relativeX = (event.getX() - this.matrixValues[2]) / this.matrixValues[0];
+        this.relativeY = (event.getY() - this.matrixValues[5]) / this.matrixValues[4];
+        
+        createNewWifiPointOnMap(this.relativeX,this.relativeY);
+        invalidate();
+    }
+	    
+	public void onTouchStart(MotionEvent event) {
+        touchStarted = event.getEventTime();
+        savedMatrix.set(matrix);
+        start.set(event.getX(), event.getY());
+        mode = DRAG;
+        Log.d(TAG, "mode=DRAG");
+    }
+	    
+    public void onTouchEnd(MotionEvent event) {
+        mode = NONE;
+        Log.d(TAG, "mode=NONE");
+        if (event.getEventTime() - touchStarted < 150) {
+            onTap(event);
+        }
+    }
+	    
+    public void onMultiTouchStart(MotionEvent event) {
+        oldDist = spacing(event);
+        Log.d(TAG, "oldDist=" + oldDist);
+        if (oldDist > 10f) {
+            savedMatrix.set(matrix);
+            midPoint(mid, event);
+            mode = ZOOM;
+            Log.d(TAG, "mode=ZOOM");
+        }
+    }
+	    
+    public void onMultiTouchEnd(MotionEvent event) {
+        savedMatrix.set(matrix);
+        mode = DRAG;
+        Log.d(TAG, "mode=DRAG");
+    }
+    
+    public void onTouchMove(MotionEvent event) {
+        if (mode == DRAG) {
+            mapMove(event);
+        }
+        else if (mode == ZOOM) {
+            mapZoom(event);
+        }
+    }
+    
+    public void mapMove(MotionEvent event) {
+        matrix.set(savedMatrix);
+        matrix.postTranslate(event.getX() - start.x, event.getY() - start.y);
+        setImageMatrix(matrix);
+    }
+    
+    public void mapZoom(MotionEvent event) {
+        float newDist = spacing(event);
+        Log.d(TAG, "newDist=" + newDist);
+        if (newDist > 10f) {
+            matrix.set(savedMatrix);
+            float scale = newDist / oldDist;
+            matrix.postScale(scale, scale, mid.x, mid.y);
+            setImageMatrix(matrix);
+        }
+    }
+	
+	
+	
+	
 	/*
 	 * Helper methods for zoom functionality
 	 */
