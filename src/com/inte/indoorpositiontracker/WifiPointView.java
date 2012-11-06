@@ -17,6 +17,7 @@ public class WifiPointView extends View {
 	private Paint selectedpaint;
 	
 	private float[] location;
+	private float radius;
 	
 	// placeholders for calculated screen positions
 	private float relativeX,relativeY;
@@ -36,6 +37,8 @@ public class WifiPointView extends View {
 		this.location = new float[2];
 		
 		this.active = false;
+		
+		this.radius = 10f;
 	}
 	
 	@Override
@@ -45,9 +48,9 @@ public class WifiPointView extends View {
 	}
 	
 	protected void drawWithTransformations(Canvas canvas, float[] matrixValues) {
-		
-		this.relativeX = (location[0] + matrixValues[2]) / matrixValues[0];
-		this.relativeY = (location[1] + matrixValues[5]) / matrixValues[4];
+	    
+		this.relativeX = matrixValues[2] + location[0] * matrixValues[0];
+		this.relativeY = matrixValues[5] + location[1] * matrixValues[4];
 		
 		if(this.active) {
 			this.selectedpaint = this.activepaint;
@@ -55,12 +58,16 @@ public class WifiPointView extends View {
 			this.selectedpaint = this.redpaint;
 		}
 		
-		canvas.drawCircle(this.relativeX, this.relativeY, 10, this.selectedpaint);
+		canvas.drawCircle(this.relativeX, this.relativeY, this.radius, this.selectedpaint);
 	}
 	
 	public void setLocation(float x, float y) {
 		this.location[0] = x;
 		this.location[1] = y;
+	}
+	
+	public void setSize(float radius) {
+	    this.radius = radius;
 	}
 	
 	public void setFingerPrint(/*WifiFingerPrint data*/) {
