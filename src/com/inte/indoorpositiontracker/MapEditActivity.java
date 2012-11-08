@@ -5,7 +5,6 @@ import java.util.List;
 
 import android.graphics.PointF;
 import android.net.wifi.ScanResult;
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -16,24 +15,28 @@ public class MapEditActivity extends MapActivity{
     private long touchStarted;
     
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        
-        mPointer = mMap.createNewWifiPointOnMap(new PointF(-1000, -1000));
-    }
-    
-    @Override
     public void onReceiveWifiScanResults(List<ScanResult> results) {
-        if(results.size() > 0) { // need atleast 3 access points
-            HashMap<String, Integer> measurements = new HashMap<String, Integer>();
-            for (ScanResult result : results) {
-                measurements.put(result.BSSID, result.level);
+        if(mPointer != null) {
+            switch(results.size()) {
+                case 0:
+                case 1:
+                    // TODO: notify user there are not enough access points (0-1)
+                    break;
+                case 2:
+                    // TODO: nofify user there are only 2 access points but give
+                    // the possibility to add fingerprint anyway
+                default: // sufficient amount of access points (>2), add fingerprint
+                    HashMap<String, Integer> measurements = new HashMap<String, Integer>();
+                    for (ScanResult result : results) {
+                        measurements.put(result.BSSID, result.level);
+                    }
+                    Fingerprint f = new Fingerprint(measurements);
+                    f.setLocation(mPointer.getLocation());
+                    IndoorPositionTracker application = (IndoorPositionTracker) getApplication();
+                    application.addFingerprint(f);
             }
-            Fingerprint f = new Fingerprint(measurements);
-            f.setLocation(mPointer.getLocation());
-            IndoorPositionTracker application = (IndoorPositionTracker) getApplication();
-            application.addFingerprint(f);
         }
+
     }
     
     public boolean onTouch(View v, MotionEvent event) {
@@ -47,8 +50,13 @@ public class MapEditActivity extends MapActivity{
             case MotionEvent.ACTION_UP:
                 if (event.getEventTime() - touchStarted < 150) {
                     PointF location = new PointF(event.getX(), event.getY());
-                    mPointer.setLocation(location);
+                    if(mPointer == null) {
+                        mPointer = mMap.createNewWifiPointOnMap(location);
+                    } else {
+                        mPointer.setLocation(location);
+                    }
                     refreshMap();
+                    mWifi.startScan();
                 }
                 break;
         }

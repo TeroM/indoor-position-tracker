@@ -32,6 +32,7 @@ public class MapViewActivity extends MapActivity {
         }
     };
     
+    private boolean mPaused = false;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,12 +45,28 @@ public class MapViewActivity extends MapActivity {
 
             @Override
             public void run() {
-                mWifi.startScan();
+                if(mPaused == false) {
+                    mWifi.startScan();
+                }
             }
             
         }, SCAN_DELAY, SCAN_INTERVAL);
-        editMap();
+        
+        startMapEditActivity();
     }
+    
+    public void onResume() {
+        super.onResume();
+
+        mPaused = false;
+    }
+    
+    public void onPause() {
+        super.onPause();
+
+        mPaused = true;
+    }
+    
     
     @Override
     public void onReceiveWifiScanResults(final List<ScanResult> results) {
@@ -85,7 +102,7 @@ public class MapViewActivity extends MapActivity {
         }
     }
     
-    public void editMap() {
+    public void startMapEditActivity() {
         Intent intent = new Intent(MapViewActivity.this, MapEditActivity.class);
         startActivity(intent);
     }
@@ -102,7 +119,7 @@ public class MapViewActivity extends MapActivity {
         // Handle item selection
         switch (item.getItemId()) {
             case 1:
-                editMap();
+                startMapEditActivity();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

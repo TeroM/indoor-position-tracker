@@ -24,8 +24,7 @@ public class Fingerprint {
 	    mMeasurements = measurements;
 	}
 	public Fingerprint(int id, String map, PointF location) {
-        mId = id;
-        mMap = map;
+	    this();
 		mLocation = location;
 	}
 	
@@ -93,7 +92,7 @@ public class Fingerprint {
 	}
 	
 	public Fingerprint getClosestMatch(ArrayList<Fingerprint> fingerprints) {
-	    long matti = System.currentTimeMillis();
+	    long time = System.currentTimeMillis(); // TODO: remove
 	    Fingerprint closest = null;
 	    float bestScore = -1;
 	    
@@ -107,8 +106,9 @@ public class Fingerprint {
     	    }	        
 	    }
 
-	    matti = System.currentTimeMillis() - matti;
-	    Log.d("KKK", "\n\n\n\n\n\n" + matti);
+	    // TODO: remove timing
+	    time = System.currentTimeMillis() - time;
+	    Log.d("KKK", "\n\n\n\n\n\ncalculation location took " + time + "milliseconds.");
 	    return closest;
 	}
 }
