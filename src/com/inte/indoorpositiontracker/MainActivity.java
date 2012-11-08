@@ -3,6 +3,7 @@ package com.inte.indoorpositiontracker;
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
@@ -29,10 +30,37 @@ public class MainActivity extends Activity implements OnTouchListener {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         //getMenuInflater().inflate(R.menu.activity_main, menu);   	
-    	  menu.add(1, 1, 0, "RESET SCAN");
-    	  menu.add(1, 2, 1, "OPTIONS");
-    	  menu.add(1, 3, 2, "EXIT");    	     
+    	  menu.add(1, 1, 0, "NAVIGATION MODE");
+    	  menu.add(1, 2, 1, "ADD FINGERPRINTS");   	  
+    	  menu.add(1, 3, 2, "OPTIONS"); 
+    	  menu.add(1, 4, 3, "EXIT"); 
         return true;
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+
+     switch(item.getItemId())
+     {
+     case 1:
+      //1. nappi
+      return true;
+     case 2:
+      //2. nappi
+      return true;
+     case 3:
+      //3. nappi
+    	 moveTaskToBack(true);
+      return true;
+     case 4:
+         //EXIT - siirryt‰‰n home screeniin
+       	 moveTaskToBack(true);
+         return true;
+
+     }
+     return super.onOptionsItemSelected(item);
+
     }
 
 	
