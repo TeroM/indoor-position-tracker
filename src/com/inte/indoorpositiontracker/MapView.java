@@ -3,12 +3,8 @@ package com.inte.indoorpositiontracker;
 import java.util.ArrayList;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Matrix;
-import android.graphics.Paint;
 import android.graphics.PointF;
 import android.util.AttributeSet;
 import android.util.FloatMath;
@@ -17,7 +13,7 @@ import android.view.MotionEvent;
 import android.widget.ImageView;
 
 public class MapView extends ImageView {
-
+    
 	private final String TAG = "Touch";
 	// These matrices will be used to move and zoom image
 	private Matrix matrix = new Matrix();
@@ -33,51 +29,27 @@ public class MapView extends ImageView {
 	private PointF start = new PointF();
 	private PointF mid = new PointF();
 	float oldDist = 1f;
-
-	private Paint paint;
-	private Bitmap drawingBitmap;
-	private Canvas mapCanvas;
-	
-	private float[] matrixValues;
-	private float relativeX,relativeY;
 	
 	private ArrayList<WifiPointView> wifiPoints;
 	
-	
 	private long touchStarted;
-
+	
 	public MapView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		
-		this.drawingBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.kerros);
-		
-		this.setImageBitmap(drawingBitmap);
-		
-		this.mapCanvas = new Canvas(this.drawingBitmap);
-
-		this.paint = new Paint();
-		paint.setColor(Color.RED);
-		paint.setAntiAlias(true);
-
-		this.matrixValues = new float[9];
-		this.relativeX = 0;
-		this.relativeY = 0;
-		
 		this.wifiPoints = new ArrayList<WifiPointView>();
-		
-		WifiPointView wp1 = createNewWifiPointOnMap(20, 20);
-		wp1.activate();
 	}
-
+	
 	@Override
 	protected void onDraw(Canvas canvas) {
 		
 		super.onDraw(canvas);
 		
-		this.matrix.getValues(this.matrixValues);
+		float[] values = new float[9];
+		this.matrix.getValues(values);
 		
 		for(WifiPointView point : this.wifiPoints) {
-			point.drawWithTransformations(canvas, this.matrixValues);
+			point.drawWithTransformations(canvas, values);
 		}
 
 	}
@@ -109,17 +81,7 @@ public class MapView extends ImageView {
 	}
 
 	public void onTap(MotionEvent event) {
-        /*
-         * Add new wifi-fingerprint-ball
-         * */
-        
-        this.matrix.getValues(this.matrixValues);
-        
-        this.relativeX = (event.getX() - this.matrixValues[2]) / this.matrixValues[0];
-        this.relativeY = (event.getY() - this.matrixValues[5]) / this.matrixValues[4];
-        
-        createNewWifiPointOnMap(this.relativeX,this.relativeY);
-        invalidate();
+	    
     }
 	    
 	public void onTouchStart(MotionEvent event) {
@@ -203,13 +165,20 @@ public class MapView extends ImageView {
 	}
 
 	/*
-	 * Creates a new WifiPointView and sets it's location relative to map.
+	 * Creates a new WifiPointView and sets it's location.
 	 */
-	public WifiPointView createNewWifiPointOnMap(float x,float y) {
+	public WifiPointView createNewWifiPointOnMap(PointF location) {
 		WifiPointView wpView = new WifiPointView(this.getContext());
-		wpView.setLocation(x,y);
+		wpView.setLocation(location);
 		this.wifiPoints.add(wpView);
 		return wpView;
+	}
+	
+	public WifiPointView createNewWifiPointOnMap(Fingerprint fingerprint) {
+	    WifiPointView wpView = new WifiPointView(this.getContext());
+	    wpView.setFingerprint(fingerprint);
+	    this.wifiPoints.add(wpView);
+	    return wpView;
 	}
 	
 	public ArrayList<WifiPointView> getWifiPoints() {

@@ -4,11 +4,12 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PointF;
 import android.view.View;
 
 public class WifiPointView extends View {
 	
-	// private WifiFingerPrint fpData; <- fingerprintti... varmaankin osoittaa jossain muualla sijaitsevaan arrayhin?
+	private Fingerprint fingerprint;
 	
 	private boolean active;
 	
@@ -16,7 +17,7 @@ public class WifiPointView extends View {
 	private Paint activepaint;
 	private Paint selectedpaint;
 	
-	private float[] location;
+	private PointF mLocation;
 	private float radius;
 	
 	// placeholders for calculated screen positions
@@ -34,11 +35,11 @@ public class WifiPointView extends View {
 		this.activepaint.setTextSize(25);
 		this.activepaint.setAntiAlias(true);
 		
-		this.location = new float[2];
-		
 		this.active = false;
 		
 		this.radius = 10f;
+		
+		mLocation = new PointF(0,0);
 	}
 	
 	@Override
@@ -49,11 +50,12 @@ public class WifiPointView extends View {
 	
 	protected void drawWithTransformations(Canvas canvas, float[] matrixValues) {
 	    
-		this.relativeX = matrixValues[2] + location[0] * matrixValues[0];
-		this.relativeY = matrixValues[5] + location[1] * matrixValues[4];
+		this.relativeX = matrixValues[2] + mLocation.x * matrixValues[0];
+		this.relativeY = matrixValues[5] + mLocation.y * matrixValues[4];
 		
 		if(this.active) {
 			this.selectedpaint = this.activepaint;
+			this.radius = 20;
 		} else {
 			this.selectedpaint = this.redpaint;
 		}
@@ -61,17 +63,25 @@ public class WifiPointView extends View {
 		canvas.drawCircle(this.relativeX, this.relativeY, this.radius, this.selectedpaint);
 	}
 	
-	public void setLocation(float x, float y) {
-		this.location[0] = x;
-		this.location[1] = y;
+	public void setLocation(PointF location) {
+		mLocation = location;
+	}
+	
+	public PointF getLocation() {
+	    return mLocation;
 	}
 	
 	public void setSize(float radius) {
 	    this.radius = radius;
 	}
 	
-	public void setFingerPrint(/*WifiFingerPrint data*/) {
-		//this.fpData = data;
+	public void setFingerprint(Fingerprint fingerprint) {
+		this.fingerprint = fingerprint;
+		mLocation = fingerprint.getLocation();
+	}
+	
+	public Fingerprint getFingerprint() {
+	    return this.fingerprint;
 	}
 	
 	public void activate() {
@@ -81,5 +91,4 @@ public class WifiPointView extends View {
 	public void deactivate() {
 		this.active = false;
 	}
-
 }
