@@ -108,7 +108,7 @@ public class Fingerprint {
 
 	    // TODO: remove timing
 	    time = System.currentTimeMillis() - time;
-	    Log.d("KKK", "\n\n\n\n\n\ncalculation location took " + time + "milliseconds.");
+	    Log.d("KKK", "\n\n\n\n\n\ncalculation location took " + time + " milliseconds.");
 	    return closest;
 	}
 }

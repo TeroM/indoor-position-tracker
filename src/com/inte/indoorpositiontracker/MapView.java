@@ -169,6 +169,9 @@ public class MapView extends ImageView {
 	 */
 	public WifiPointView createNewWifiPointOnMap(PointF location) {
 		WifiPointView wpView = new WifiPointView(this.getContext());
+		float[] values = new float[9];
+		matrix.getValues(values);
+		location.set(location.x - values[2] * values[0], location.y - values[5] * values[4]);
 		wpView.setLocation(location);
 		this.wifiPoints.add(wpView);
 		return wpView;

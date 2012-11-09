@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.graphics.PointF;
 import android.net.wifi.ScanResult;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -17,6 +18,7 @@ public class MapEditActivity extends MapActivity{
     @Override
     public void onReceiveWifiScanResults(List<ScanResult> results) {
         if(mPointer != null) {
+            Log.d("sgs", "\n\n\n\n\n" + results.size());
             switch(results.size()) {
                 case 0:
                 case 1:

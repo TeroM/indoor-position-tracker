@@ -50,8 +50,8 @@ public class WifiPointView extends View {
 	
 	protected void drawWithTransformations(Canvas canvas, float[] matrixValues) {
 	    
-		this.relativeX = matrixValues[2] + mLocation.x * matrixValues[0];
-		this.relativeY = matrixValues[5] + mLocation.y * matrixValues[4];
+		this.relativeX = mLocation.x + matrixValues[2] * matrixValues[0];
+		this.relativeY = mLocation.y + matrixValues[5] * matrixValues[4];
 		
 		if(this.active) {
 			this.selectedpaint = this.activepaint;
