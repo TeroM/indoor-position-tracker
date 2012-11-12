@@ -1,5 +1,6 @@
 package com.inte.indoorpositiontracker;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
@@ -9,6 +10,7 @@ import java.util.TreeSet;
 import android.app.ProgressDialog;
 import android.graphics.PointF;
 import android.net.wifi.ScanResult;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,7 +18,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
-public class MapEditActivity extends MapActivity{
+public class MapEditActivity extends MapActivity {
     private static final int SCAN_COUNT = 3;
     private static final int SCAN_DELAY = 500;
     
@@ -27,6 +29,21 @@ public class MapEditActivity extends MapActivity{
     private ProgressDialog mLoadingDialog; // loading bar which is shown while scanning access points
     
     private HashMap<String, Integer> mMeasurements;
+    
+    private boolean mShowFingerprints = true;
+    
+    
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        
+        IndoorPositionTracker application = (IndoorPositionTracker) getApplication();
+        ArrayList<Fingerprint> fingerprints = application.getFingerprintData();
+        
+        for(Fingerprint fingerprint : fingerprints) {
+            mMap.createNewWifiPointOnMap(fingerprint, mShowFingerprints);
+        }
+    }
     
     @Override
     public void onReceiveWifiScanResults(List<ScanResult> results) {
@@ -73,6 +90,8 @@ public class MapEditActivity extends MapActivity{
                     
                     Fingerprint f = new Fingerprint(mMeasurements);
                     f.setLocation(mPointer.getLocation());
+                    mMap.createNewWifiPointOnMap(f, mShowFingerprints);
+                    
                     IndoorPositionTracker application = (IndoorPositionTracker) getApplication();
                     application.addFingerprint(f);
                     mLoadingDialog.dismiss();
@@ -98,6 +117,7 @@ public class MapEditActivity extends MapActivity{
                     PointF location = new PointF(event.getX(), event.getY());
                     if(mPointer == null) {
                         mPointer = mMap.createNewWifiPointOnMap(location);
+                        mPointer.activate();
                     } else {
                         mPointer.setLocation(location);
                     }
@@ -113,7 +133,8 @@ public class MapEditActivity extends MapActivity{
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         //getMenuInflater().inflate(R.menu.activity_main, menu);    
-        menu.add(1, 1, 0, "EXIT EDIT MODE");        
+        menu.add(1, 1, 0, "EXIT EDIT MODE");
+        menu.add(1, 2, 2, (mShowFingerprints ? "HIDE FINGERPRINTS" : "SHOW FINGERPRINTS"));
         return true;
     }
     
@@ -123,6 +144,10 @@ public class MapEditActivity extends MapActivity{
         switch (item.getItemId()) {
             case 1:
                 finish();
+                return true;
+            case 2:
+                setFingerprintVisibility(!mShowFingerprints);
+                item.setTitle(mShowFingerprints ? "HIDE FINGERPRINTS" : "SHOW FINGERPRINTS");
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -147,5 +172,16 @@ public class MapEditActivity extends MapActivity{
             }
             
         }, SCAN_DELAY);
+    }
+    
+    public void setFingerprintVisibility(boolean visible) {
+        mShowFingerprints = visible;
+        mMap.setWifiPointsVisibility(visible);
+        
+        if (mPointer != null) {
+            mPointer.setVisible(true); // pointer is always visible
+        }
+        
+        refreshMap();
     }
 }

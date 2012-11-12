@@ -7,7 +7,7 @@ import android.app.Application;
 public class IndoorPositionTracker extends Application {
     private ArrayList<Fingerprint> mFingerprints;
     
-    FingerprintDatabaseHandler mFingerprintDatabaseHandler;
+    private FingerprintDatabaseHandler mFingerprintDatabaseHandler;
     
     
     @Override

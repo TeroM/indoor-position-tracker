@@ -25,7 +25,7 @@ public class MapViewActivity extends MapActivity {
     private WifiPointView mLocationPointer;
     
     // handler for callbacks to the UI thread
-    private static Handler updateHandler = new Handler();
+    private static Handler sUpdateHandler = new Handler();
 
     // runnable to refresh map (called by the handler)
     private Runnable mRefreshMap = new Runnable() {
@@ -119,7 +119,7 @@ public class MapViewActivity extends MapActivity {
                     mLocationPointer.setFingerprint(closestMatch);
                     
                     // need to refresh map through updateHandler since only UI thread is allowed to touch its views
-                    updateHandler.post(mRefreshMap); 
+                    sUpdateHandler.post(mRefreshMap); 
                     
                     mScanThreadCount--;
                 }

@@ -10,7 +10,6 @@ import android.content.IntentFilter;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
@@ -18,7 +17,7 @@ import android.view.View.OnTouchListener;
 public class MapActivity extends Activity implements OnTouchListener {
     protected WifiManager mWifi;
     protected MapView mMap;
-    BroadcastReceiver receiver;
+    private BroadcastReceiver mReceiver;
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -35,7 +34,7 @@ public class MapActivity extends Activity implements OnTouchListener {
     public void onStart() {
         super.onStart();
         
-        receiver = new BroadcastReceiver ()
+        mReceiver = new BroadcastReceiver ()
         {
             @Override
             public void onReceive(Context c, Intent intent) 
@@ -45,7 +44,7 @@ public class MapActivity extends Activity implements OnTouchListener {
             }
         };
         
-        registerReceiver(receiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+        registerReceiver(mReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
         
     }
     public void onReceiveWifiScanResults(List<ScanResult> results) {
@@ -61,7 +60,7 @@ public class MapActivity extends Activity implements OnTouchListener {
     @Override
     protected void onStop()
     {
-        unregisterReceiver(receiver);
+        unregisterReceiver(mReceiver);
         super.onStop();
     }
     

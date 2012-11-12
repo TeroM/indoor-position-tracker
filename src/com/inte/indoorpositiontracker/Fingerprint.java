@@ -86,7 +86,7 @@ public class Fingerprint {
 			result += value * value;
 		}
 		
-		result = FloatMath.sqrt(result);
+		//result = FloatMath.sqrt(result);
 		
 		return result;
 	}

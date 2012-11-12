@@ -8,37 +8,33 @@ import android.graphics.PointF;
 import android.view.View;
 
 public class WifiPointView extends View {
+	private static final int COLOR_INACTIVE = Color.RED;
+	private static final int COLOR_ACTIVE = Color.GREEN;
 	
-	private Fingerprint fingerprint;
+	private Fingerprint mFingerprint;
 	
-	private boolean active;
+	private boolean mActive;
 	
-	private Paint redpaint;
-	private Paint activepaint;
-	private Paint selectedpaint;
+	private Paint mPaint;
 	
 	private PointF mLocation;
-	private float radius;
+	private float mRadius;
 	
 	// placeholders for calculated screen positions
-	private float relativeX,relativeY;
+	private float mRelativeX, mRelativeY;
+
+	private boolean mVisible;
 
 	public WifiPointView(Context context) {
 		super(context);
-		this.redpaint = new Paint();
-		this.redpaint.setColor(Color.RED);
-		this.redpaint.setTextSize(25);
-		this.redpaint.setAntiAlias(true);
+		mPaint = new Paint();
+		mPaint.setColor(COLOR_INACTIVE);
+		mPaint.setTextSize(25);
+		mPaint.setAntiAlias(true);
 		
-		this.activepaint = new Paint();
-		this.activepaint.setColor(Color.GREEN);
-		this.activepaint.setTextSize(25);
-		this.activepaint.setAntiAlias(true);
-		
-		this.active = false;
-		
-		this.radius = 10f;
-		
+		mActive = false;
+		mVisible = true;
+		mRadius = 10f;
 		mLocation = new PointF(0,0);
 	}
 	
@@ -49,18 +45,18 @@ public class WifiPointView extends View {
 	}
 	
 	protected void drawWithTransformations(Canvas canvas, float[] matrixValues) {
-	    
-		this.relativeX = mLocation.x + matrixValues[2] * matrixValues[0];
-		this.relativeY = mLocation.y + matrixValues[5] * matrixValues[4];
-		
-		if(this.active) {
-			this.selectedpaint = this.activepaint;
-			this.radius = 20;
-		} else {
-			this.selectedpaint = this.redpaint;
-		}
-		
-		canvas.drawCircle(this.relativeX, this.relativeY, this.radius, this.selectedpaint);
+		mRelativeX = mLocation.x + matrixValues[2] * matrixValues[0];
+		mRelativeY = mLocation.y + matrixValues[5] * matrixValues[4];
+    		
+		if(mVisible == true) {
+    		if(mActive) {
+    		    mPaint.setColor(COLOR_ACTIVE);
+    		} else {
+    		    mPaint.setColor(COLOR_INACTIVE);
+    		}
+    		
+    		canvas.drawCircle(mRelativeX, mRelativeY, mRadius, mPaint);
+	    }
 	}
 	
 	public void setLocation(PointF location) {
@@ -72,23 +68,31 @@ public class WifiPointView extends View {
 	}
 	
 	public void setSize(float radius) {
-	    this.radius = radius;
+	    mRadius = radius;
 	}
 	
 	public void setFingerprint(Fingerprint fingerprint) {
-		this.fingerprint = fingerprint;
+		mFingerprint = fingerprint;
 		mLocation = fingerprint.getLocation();
 	}
 	
 	public Fingerprint getFingerprint() {
-	    return this.fingerprint;
+	    return mFingerprint;
 	}
 	
 	public void activate() {
-		this.active = true;
+		mActive = true;
 	}
 	
 	public void deactivate() {
-		this.active = false;
+		mActive = false;
+	}
+	
+	public void setVisible(boolean visible) {
+	    mVisible = visible;
+	}
+	
+	public boolean isVisible() {
+	    return mVisible;
 	}
 }

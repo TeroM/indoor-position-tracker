@@ -32,7 +32,7 @@ public class FingerprintDatabaseHandler extends SQLiteOpenHelper{
     public FingerprintDatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
- 
+
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_MEASUREMENTS_TABLE = "CREATE TABLE " + TABLE_MEASUREMENTS + "("
