@@ -74,8 +74,8 @@ public class Fingerprint {
 		
 		HashMap<String, Integer> fingerprintMeasurements = fingerprint.getMeasurements();
 		TreeSet<String> keys = new TreeSet<String>();
-		keys.addAll(fingerprintMeasurements.keySet());
 		keys.addAll(mMeasurements.keySet());
+		keys.addAll(fingerprintMeasurements.keySet());
 		
 		for (String key : keys) {
 			int value = 0;
@@ -108,7 +108,7 @@ public class Fingerprint {
 
 	    // TODO: remove timing
 	    time = System.currentTimeMillis() - time;
-	    Log.d("KKK", "\n\n\n\n\n\ncalculation location took " + time + " milliseconds.");
+	    Log.d("time", "\n\n\n\n\n\ncalculation location took " + time + " milliseconds.");
 	    return closest;
 	}
 }

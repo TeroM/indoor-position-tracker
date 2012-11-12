@@ -2,6 +2,8 @@ package com.inte.indoorpositiontracker;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.TreeSet;
 
 import android.app.ProgressDialog;
@@ -16,6 +18,7 @@ import android.widget.Toast;
 
 public class MapEditActivity extends MapActivity{
     private static final int SCAN_COUNT = 3;
+    private static final int SCAN_DELAY = 500;
     
     private WifiPointView mPointer;
     private long mTouchStarted;
@@ -41,20 +44,30 @@ public class MapEditActivity extends MapActivity{
                 // go through scan results and add measurement values
                 TreeSet<String> keys = new TreeSet<String>();
                 keys.addAll(measurements.keySet());
+                keys.addAll(mMeasurements.keySet());
+                
                 for (String key : keys) {
                     Integer value = measurements.get(key);
                     Integer oldValue = mMeasurements.get(key);
-                    value += (oldValue == null) ? 0 : oldValue;
-                    mMeasurements.put(key, value);
+                    
+                    if(oldValue == null) {
+                        mMeasurements.put(key, value + (-119 * (SCAN_COUNT - 1 - mScansLeft)));
+                    } else if(value == null) {
+                        mMeasurements.put(key, -119 + oldValue);
+                    } else {
+                        mMeasurements.put(key, value + oldValue);
+                    }
                 }
                 
                 
                 if(mScansLeft > 0) { // keep on scanning
-                    mWifi.startScan(); 
+                    scanNext();
                 } else { // calculate average of measurements and add fingerprint
                     // calculate average for each measurement
+                    Log.d("ss", "\n\n\n\n");
                     for (String key : mMeasurements.keySet()) {
                         int value = (int) mMeasurements.get(key) / SCAN_COUNT;
+                        Log.d("ss", " " + key + " " + value + "\n");
                         mMeasurements.put(key, value);
                     }
                     
@@ -121,5 +134,18 @@ public class MapEditActivity extends MapActivity{
         mMeasurements = new HashMap<String, Integer>();
         mLoadingDialog = ProgressDialog.show(this, "", "Scanning..", true);
         mWifi.startScan();
+    }
+    
+    public void scanNext() {
+        Timer timer = new Timer();
+        
+        timer.schedule(new TimerTask() {
+
+            @Override
+            public void run() {
+                mWifi.startScan(); 
+            }
+            
+        }, SCAN_DELAY);
     }
 }
