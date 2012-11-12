@@ -2,7 +2,9 @@ package com.inte.indoorpositiontracker;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.TreeSet;
 
+import android.app.ProgressDialog;
 import android.graphics.PointF;
 import android.net.wifi.ScanResult;
 import android.util.Log;
@@ -10,35 +12,64 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
 public class MapEditActivity extends MapActivity{
+    private static final int SCAN_COUNT = 3;
+    
     private WifiPointView mPointer;
-    private long touchStarted;
+    private long mTouchStarted;
+    private int mScansLeft = 0;
+    
+    private ProgressDialog mLoadingDialog; // loading bar which is shown while scanning access points
+    
+    private HashMap<String, Integer> mMeasurements;
     
     @Override
     public void onReceiveWifiScanResults(List<ScanResult> results) {
-        if(mPointer != null) {
-            Log.d("sgs", "\n\n\n\n\n" + results.size());
-            switch(results.size()) {
-                case 0:
-                case 1:
-                    // TODO: notify user there are not enough access points (0-1)
-                    break;
-                case 2:
-                    // TODO: nofify user there are only 2 access points but give
-                    // the possibility to add fingerprint anyway
-                default: // sufficient amount of access points (>2), add fingerprint
-                    HashMap<String, Integer> measurements = new HashMap<String, Integer>();
-                    for (ScanResult result : results) {
-                        measurements.put(result.BSSID, result.level);
+        if(mScansLeft != 0 && mPointer != null) {
+            if(results.size() > 2) {
+                mScansLeft--;
+                
+                HashMap<String, Integer> measurements = new HashMap<String, Integer>();
+                Log.d("ss", "\n\n\n\n");
+                for (ScanResult result : results) {
+                    measurements.put(result.BSSID, result.level);
+                    Log.d("ss", " " + result.BSSID + " " + result.level + "\n");
+                }
+                
+                // go through scan results and add measurement values
+                TreeSet<String> keys = new TreeSet<String>();
+                keys.addAll(measurements.keySet());
+                for (String key : keys) {
+                    Integer value = measurements.get(key);
+                    Integer oldValue = mMeasurements.get(key);
+                    value += (oldValue == null) ? 0 : oldValue;
+                    mMeasurements.put(key, value);
+                }
+                
+                
+                if(mScansLeft > 0) { // keep on scanning
+                    mWifi.startScan(); 
+                } else { // calculate average of measurements and add fingerprint
+                    // calculate average for each measurement
+                    for (String key : mMeasurements.keySet()) {
+                        int value = (int) mMeasurements.get(key) / SCAN_COUNT;
+                        mMeasurements.put(key, value);
                     }
-                    Fingerprint f = new Fingerprint(measurements);
+                    
+                    Fingerprint f = new Fingerprint(mMeasurements);
                     f.setLocation(mPointer.getLocation());
                     IndoorPositionTracker application = (IndoorPositionTracker) getApplication();
                     application.addFingerprint(f);
+                    mLoadingDialog.dismiss();
+                }
+            } else {
+                mLoadingDialog.dismiss();
+                Toast.makeText(getApplicationContext(), "Failed to create fingerprint. Could not find enough access points (found "
+                        + results.size() + ", need at least 3).", Toast.LENGTH_SHORT).show();
             }
         }
-
     }
     
     public boolean onTouch(View v, MotionEvent event) {
@@ -47,10 +78,10 @@ public class MapEditActivity extends MapActivity{
         // Handle touch events here...
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
-                touchStarted = event.getEventTime();
+                mTouchStarted = event.getEventTime();
                 break;
             case MotionEvent.ACTION_UP:
-                if (event.getEventTime() - touchStarted < 150) {
+                if (event.getEventTime() - mTouchStarted < 150) {
                     PointF location = new PointF(event.getX(), event.getY());
                     if(mPointer == null) {
                         mPointer = mMap.createNewWifiPointOnMap(location);
@@ -58,7 +89,7 @@ public class MapEditActivity extends MapActivity{
                         mPointer.setLocation(location);
                     }
                     refreshMap();
-                    mWifi.startScan();
+                    startScan(); // show loading dialog and start wifi scan
                 }
                 break;
         }
@@ -83,5 +114,12 @@ public class MapEditActivity extends MapActivity{
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+    
+    public void startScan() {
+        mScansLeft = SCAN_COUNT;
+        mMeasurements = new HashMap<String, Integer>();
+        mLoadingDialog = ProgressDialog.show(this, "", "Scanning..", true);
+        mWifi.startScan();
     }
 }
