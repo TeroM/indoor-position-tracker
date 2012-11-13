@@ -14,8 +14,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 
 public class MapViewActivity extends MapActivity {
+	
+	MapView image;
+	
     public static final int SCAN_DELAY = 2000;
     public static final int SCAN_INTERVAL = 2000;
     public static final int MAX_SCAN_THREADS = 2;
@@ -46,6 +50,8 @@ public class MapViewActivity extends MapActivity {
         
         mLocationPointer = mMap.createNewWifiPointOnMap(new PointF(-1000, -1000));
         mLocationPointer.activate();
+        
+        image = (MapView) findViewById(R.id.mapView);
         
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
@@ -136,9 +142,13 @@ public class MapViewActivity extends MapActivity {
     }
     
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        //getMenuInflater().inflate(R.menu.activity_main, menu);    
-        menu.add(1, 1, 0, "EDIT MAP");        
+    public boolean onCreateOptionsMenu(Menu menu) {   
+        menu.add(1, 1, 0, "EDIT MAP"); 
+        menu.add(1, 2, 1, "BASEMENT");
+        menu.add(1, 3, 2, "1. FLOOR");
+        menu.add(1, 4, 3, "2. FLOOR");
+        menu.add(1, 5, 4, "3. FLOOR");
+        menu.add(1, 6, 5, "4. FLOOR");
         return true;
     }
     
@@ -148,6 +158,21 @@ public class MapViewActivity extends MapActivity {
         switch (item.getItemId()) {
             case 1:
                 startMapEditActivity();
+                return true;
+            case 2:
+            	image.setImageResource(R.drawable.pohja);
+                return true;
+            case 3:
+            	image.setImageResource(R.drawable.kerros);
+                return true;
+            case 4:
+            	image.setImageResource(R.drawable.toka);
+                return true;
+            case 5:
+            	image.setImageResource(R.drawable.kolmas);
+                return true;
+            case 6:
+            	image.setImageResource(R.drawable.neljas);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
