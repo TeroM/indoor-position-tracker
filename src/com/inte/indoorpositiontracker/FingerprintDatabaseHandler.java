@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.PointF;
+import android.util.Log;
 
 public class FingerprintDatabaseHandler extends SQLiteOpenHelper{
     private static final int DATABASE_VERSION = 1;
@@ -39,15 +40,16 @@ public class FingerprintDatabaseHandler extends SQLiteOpenHelper{
                 + KEY_MEASUREMENT_ID + " INTEGER PRIMARY KEY,"
                 + KEY_FINGERPRINT + " INTEGER,"
                 + KEY_BSSID + " TEXT,"
-                + KEY_LEVEL + " INTEGER" + ");";
+                + KEY_LEVEL + " INTEGER" + ")";
+        db.execSQL(CREATE_MEASUREMENTS_TABLE);  
         
         String CREATE_FINGERPRINT_TABLE = "CREATE TABLE " + TABLE_FINGERPRINTS + "("
                 + KEY_FINGERPRINT_ID + " INTEGER PRIMARY KEY,"
                 + KEY_MAP_NAME + " TEXT,"
                 + KEY_POSITION_X + " FLOAT,"
-                + KEY_POSITION_Y + " FLOAT" + ");";
-                
-        db.execSQL(CREATE_MEASUREMENTS_TABLE + CREATE_FINGERPRINT_TABLE);
+                + KEY_POSITION_Y + " FLOAT" + ")";
+        
+        db.execSQL(CREATE_FINGERPRINT_TABLE);  
     }
  
     @Override
@@ -118,8 +120,8 @@ public class FingerprintDatabaseHandler extends SQLiteOpenHelper{
     public ArrayList<Fingerprint> getAllFingerprints() {
         ArrayList<Fingerprint> fingerprints = new ArrayList<Fingerprint>();
         
-        String SELECT_QUERY = "SELECT  * FROM " + TABLE_FINGERPRINTS;
-        SQLiteDatabase db = this.getReadableDatabase();
+        String SELECT_QUERY = "SELECT * FROM " + TABLE_FINGERPRINTS;
+        SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(SELECT_QUERY, null);
      
         // looping through all rows and adding to list
@@ -153,8 +155,8 @@ public class FingerprintDatabaseHandler extends SQLiteOpenHelper{
         
         if(cursor.moveToFirst()) {
             do {
-                String BSSID = cursor.getString(1);
-                int level = cursor.getInt(2);
+                String BSSID = cursor.getString(0);
+                int level = cursor.getInt(1);
                         
                 measurements.put(BSSID, level);                    
             } while(cursor.moveToNext());

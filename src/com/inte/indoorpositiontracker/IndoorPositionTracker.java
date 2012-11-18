@@ -14,9 +14,9 @@ public class IndoorPositionTracker extends Application {
     public void onCreate() {
         super.onCreate();
         mFingerprints = new ArrayList<Fingerprint>();
-        //deleteDatabase("stocksManager");
-        //mFingerprintDatabaseHandler = new FingerprintDatabaseHandler(this);
-        //loadFingerprintsFromDatabase();
+        //deleteDatabase("fingerprints"); 
+        mFingerprintDatabaseHandler = new FingerprintDatabaseHandler(this);
+        loadFingerprintsFromDatabase();
     }
     
     public void loadFingerprintsFromDatabase() {
@@ -29,6 +29,6 @@ public class IndoorPositionTracker extends Application {
     
     public void addFingerprint(Fingerprint fingerprint) {
         mFingerprints.add(fingerprint); // add to fingerprint arraylist
-        //mFingerprintDatabaseHandler.addFingerprint(fingerprint); // add to database
+        mFingerprintDatabaseHandler.addFingerprint(fingerprint); // add to database
     }
 }
