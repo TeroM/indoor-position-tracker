@@ -141,8 +141,6 @@ public class MapView extends ImageView {
         }
     }
 	
-    
-    
 	/**
 	 * Helper methods for zoom functionality
 	 */
@@ -172,7 +170,7 @@ public class MapView extends ImageView {
 		WifiPointView wpView = new WifiPointView(getContext());
 		float[] values = new float[9];
 		mMatrix.getValues(values);
-		location.set(location.x - values[2] * values[0], location.y - values[5] * values[4]);
+		location.set((location.x - values[2]) / values[0], (location.y - values[5]) / values[4]);
 		wpView.setLocation(location);
 		mWifiPoints.add(wpView);
 		return wpView;
@@ -194,6 +192,14 @@ public class MapView extends ImageView {
 	}
 	
 	
+	
+	/** set given WifiPointView to given location */
+	public void setWifiPointViewPosition(WifiPointView pointer, PointF location) {
+        float[] values = new float[9];
+        mMatrix.getValues(values);
+        location.set((location.x - values[2]) / values[0], (location.y - values[5]) / values[4]);
+        pointer.setLocation(location);
+    }
 	
 	/**
 	 * Functions for modifying the ArrayList of all WifiPointViews on the map

@@ -46,8 +46,8 @@ public class WifiPointView extends View {
 	}
 	
 	protected void drawWithTransformations(Canvas canvas, float[] matrixValues) {
-		mRelativeX = mLocation.x + matrixValues[2] * matrixValues[0];
-		mRelativeY = mLocation.y + matrixValues[5] * matrixValues[4];
+		mRelativeX = matrixValues[2] + mLocation.x * matrixValues[0];
+		mRelativeY = matrixValues[5] + mLocation.y * matrixValues[4];
     		
 		if(mVisible == true) { // draw only if set visible
     		if(mActive) { // choose draw color based on active state

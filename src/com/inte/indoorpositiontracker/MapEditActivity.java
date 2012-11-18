@@ -127,7 +127,7 @@ public class MapEditActivity extends MapActivity {
                         mPointer = mMap.createNewWifiPointOnMap(location);
                         mPointer.activate();
                     } else {
-                        mPointer.setLocation(location);
+                        mMap.setWifiPointViewPosition(mPointer, location);
                     }
                     refreshMap(); // redraw map
                     startScan(); // show loading dialog and start wifi scan
