@@ -47,7 +47,7 @@ Indoor position tracker stores wifi fingerprints from selected locations and det
 The indoor position tracker doesn't currently have any built in wifi fingerprints, so the user has to configure the detectable wifi-spots on the map by hand.
 
 	4.1 Adding detectable points to the map
-	Open menu and select 'Edit mode'. Go to the location where you want a wifi fingerprint recorded. Now press on the map where you are and the program starts to record the wifi fingerprint. The fingerprint is an average value from many recordings so turning yourself 360 degrees while recording might help getting a more accurate fingerprint. The recording stops automatically after about 3 seconds. To add an other point on map just move to an other location and press it on the map.
+	Open menu and select 'Edit mode'. Go to the location where you want a wifi fingerprint recorded. Now press on the map where you are. Open menu and select 'Scan', and the program starts to record the wifi fingerprint. The fingerprint is an average value from many recordings so turning yourself 360 degrees while recording might help getting a more accurate fingerprint. The recording stops automatically after about 3 seconds. To add an other point on map just move to an other location, tap it on the map and scan again.
 
 	4.2 Using positioning
 	Exit the 'Edit mode' by pressing back button. Now you see the map which also displays a green circle which is your calculated position.
