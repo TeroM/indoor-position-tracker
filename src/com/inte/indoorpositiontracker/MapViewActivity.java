@@ -14,18 +14,18 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ImageView;
 
 public class MapViewActivity extends MapActivity {
 	
 	MapView image;
 	
-    public static final int SCAN_DELAY = 2000;
-    public static final int SCAN_INTERVAL = 2000;
-    public static final int MAX_SCAN_THREADS = 2;
+    public static final int SCAN_DELAY = 1000; // delay for the first scan (milliseconds)
+    public static final int SCAN_INTERVAL = 2000; // interval between scans (milliseconds)
+    public static final int MAX_SCAN_THREADS = 2; // max amount of simultaneus scans
     
     private int mScanThreadCount = 0;
     
+    // UI pointer to visualize user where he is on the map
     private WifiPointView mLocationPointer;
     
     // handler for callbacks to the UI thread
@@ -41,6 +41,10 @@ public class MapViewActivity extends MapActivity {
     private boolean mPaused = false; // used to detect if the application is on map edit mode
     
     private HashMap<String, Integer> mMeasurements; // used to calculate weighted averages of signal strengths
+    
+    
+    
+    /** INSTANCE METHODS*/
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -58,14 +62,12 @@ public class MapViewActivity extends MapActivity {
 
             @Override
             public void run() {
-                if(mPaused == false) {
+                if(mPaused == false) { // start scan only when this activity is active
                     mWifi.startScan();
                 }
             }
             
         }, SCAN_DELAY, SCAN_INTERVAL);
-        
-        startMapEditActivity();
     }
     
     public void onResume() {
@@ -79,7 +81,6 @@ public class MapViewActivity extends MapActivity {
 
         mPaused = true;
     }
-    
     
     @Override
     public void onReceiveWifiScanResults(final List<ScanResult> results) {
@@ -121,8 +122,10 @@ public class MapViewActivity extends MapActivity {
                     
                     Fingerprint f = new Fingerprint(mMeasurements);
                     
-                    Fingerprint closestMatch = f.getClosestMatch(fingerprints);
-                    mLocationPointer.setFingerprint(closestMatch);
+                    // find fingerprint closest to our location (one with the smallest euclidean distance to us)
+                    Fingerprint closestMatch = f.getClosestMatch(fingerprints); 
+                    
+                    mLocationPointer.setFingerprint(closestMatch); // translate UI pointer to new location on screen
                     
                     // need to refresh map through updateHandler since only UI thread is allowed to touch its views
                     sUpdateHandler.post(mRefreshMap); 
@@ -130,15 +133,13 @@ public class MapViewActivity extends MapActivity {
                     mScanThreadCount--;
                 }
             };
-            t.start();
-            
-
+            t.start(); // start new scan thread
         }
     }
     
     public void startMapEditActivity() {
         Intent intent = new Intent(MapViewActivity.this, MapEditActivity.class);
-        startActivity(intent);
+        startActivity(intent); // start map edit mode
     }
     
     @Override
@@ -157,7 +158,7 @@ public class MapViewActivity extends MapActivity {
         // Handle item selection
         switch (item.getItemId()) {
             case 1:
-                startMapEditActivity();
+                startMapEditActivity(); // start map edit mode
                 return true;
             case 2:
             	image.setImageResource(R.drawable.pohja);

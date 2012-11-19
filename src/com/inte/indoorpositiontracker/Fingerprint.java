@@ -5,14 +5,16 @@ import java.util.HashMap;
 import java.util.TreeSet;
 
 import android.graphics.PointF;
-import android.util.FloatMath;
-import android.util.Log;
 
 public class Fingerprint {
     int mId;
     String mMap;
 	PointF mLocation;
 	HashMap<String, Integer> mMeasurements;
+	
+	
+	
+	/** CONSTRUCTORS */
 	
 	public Fingerprint() {
 		mId = 0;
@@ -32,6 +34,10 @@ public class Fingerprint {
 	    this(id, map, location);
 		mMeasurements = measurements;
 	}
+	
+	
+	
+	/** INSTANCE METHODS*/
 	
 	public void setId(int id) {
 	    mId = id;
@@ -69,6 +75,7 @@ public class Fingerprint {
 		return mMeasurements;
 	}
 	
+	/** calculates the (squared) euclidean distance to the given fingerprint */
 	public float compare(Fingerprint fingerprint) {
 		float result = 0f;
 		
@@ -86,13 +93,14 @@ public class Fingerprint {
 			result += value * value;
 		}
 		
-		//result = FloatMath.sqrt(result);
+		//result = FloatMath.sqrt(result); // squared euclidean distance is enough, this is not needed
 		
 		return result;
 	}
 	
+	/** compares the fingerprint to a set of fingerprints and returns the fingerprint with the smallest euclidean distance to it */
 	public Fingerprint getClosestMatch(ArrayList<Fingerprint> fingerprints) {
-	    long time = System.currentTimeMillis(); // TODO: remove
+	    //long time = System.currentTimeMillis();
 	    Fingerprint closest = null;
 	    float bestScore = -1;
 	    
@@ -106,9 +114,8 @@ public class Fingerprint {
     	    }	        
 	    }
 
-	    // TODO: remove timing
-	    time = System.currentTimeMillis() - time;
-	    Log.d("time", "\n\n\n\n\n\ncalculation location took " + time + " milliseconds.");
+	    //time = System.currentTimeMillis() - time;
+	    //Log.d("time", "\n\n\n\n\n\ncalculation location took " + time + " milliseconds.");
 	    return closest;
 	}
 }

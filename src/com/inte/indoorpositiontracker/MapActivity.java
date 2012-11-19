@@ -16,8 +16,12 @@ import android.view.View.OnTouchListener;
 
 public class MapActivity extends Activity implements OnTouchListener {
     protected WifiManager mWifi;
-    protected MapView mMap;
-    private BroadcastReceiver mReceiver;
+    protected MapView mMap; // map object
+    private BroadcastReceiver mReceiver; // for receiving wifi scan results
+    
+    
+    
+    /** INSTANCE METHODS */
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -45,8 +49,8 @@ public class MapActivity extends Activity implements OnTouchListener {
         };
         
         registerReceiver(mReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
-        
     }
+    
     public void onReceiveWifiScanResults(List<ScanResult> results) {
         
     }
@@ -65,7 +69,7 @@ public class MapActivity extends Activity implements OnTouchListener {
     }
     
     public void refreshMap() {
-        mMap.invalidate();
+        mMap.invalidate(); // redraws the map screen
     }
 }
 

@@ -15,10 +15,10 @@ public class WifiPointView extends View {
 	
 	private boolean mActive;
 	
-	private Paint mPaint;
+	private Paint mPaint; // draw color
 	
-	private PointF mLocation;
-	private float mRadius;
+	private PointF mLocation; // location on screen
+	private float mRadius; // circle radius
 	
 	// placeholders for calculated screen positions
 	private float mRelativeX, mRelativeY;
@@ -49,8 +49,8 @@ public class WifiPointView extends View {
 		mRelativeX = mLocation.x + matrixValues[2] * matrixValues[0];
 		mRelativeY = mLocation.y + matrixValues[5] * matrixValues[4];
     		
-		if(mVisible == true) {
-    		if(mActive) {
+		if(mVisible == true) { // draw only if set visible
+    		if(mActive) { // choose draw color based on active state
     		    mPaint.setColor(COLOR_ACTIVE);
     		} else {
     		    mPaint.setColor(COLOR_INACTIVE);
@@ -95,13 +95,5 @@ public class WifiPointView extends View {
 	
 	public boolean isVisible() {
 	    return mVisible;
-	}
-	
-	public boolean isBindToFingerprint() {
-	    if(mFingerprint == null) {
-	        return false;
-	    }
-	    
-	    return true;
 	}
 }

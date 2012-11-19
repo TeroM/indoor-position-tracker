@@ -10,6 +10,9 @@ public class IndoorPositionTracker extends Application {
     private FingerprintDatabaseHandler mFingerprintDatabaseHandler;
     
     
+    
+    /** INSTANCE METHODS */
+    
     @Override
     public void onCreate() {
         super.onCreate();
@@ -20,7 +23,7 @@ public class IndoorPositionTracker extends Application {
     }
     
     public void loadFingerprintsFromDatabase() {
-        mFingerprints = mFingerprintDatabaseHandler.getAllFingerprints();
+        mFingerprints = mFingerprintDatabaseHandler.getAllFingerprints(); // fetch fingerprint data from the database
     }
     
     public ArrayList<Fingerprint> getFingerprintData() {
