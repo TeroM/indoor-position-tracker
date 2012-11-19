@@ -195,4 +195,19 @@ public class MapView extends ImageView {
 	        point.setVisible(visible);
 	    }
 	}
+	
+	public void deleteFingerprints() {
+	    ArrayList<WifiPointView> itemsToRemove = new ArrayList<WifiPointView>();   
+	    for (WifiPointView point : mWifiPoints) {
+	        if (point.isBindToFingerprint()) {
+	            itemsToRemove.add(point);
+	        }	        
+	    }
+	    Log.d("dd", "\n\n\n\n\n\n\n\n\nJUHUU" + mWifiPoints.size());
+	    mWifiPoints.removeAll (itemsToRemove);
+
+
+	    Log.d("dd", "\n\n\n\n\n\n\n\n\nJUHUU" + mWifiPoints.size());
+	    invalidate();
+	}
 }

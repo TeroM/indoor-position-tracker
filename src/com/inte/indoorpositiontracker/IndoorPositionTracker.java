@@ -31,4 +31,9 @@ public class IndoorPositionTracker extends Application {
         mFingerprints.add(fingerprint); // add to fingerprint arraylist
         mFingerprintDatabaseHandler.addFingerprint(fingerprint); // add to database
     }
+    
+    public void deleteAllFingerprints() {
+        mFingerprints.clear(); // delete all fingerprints from arraylist
+        mFingerprintDatabaseHandler.deleteAllFingerprints(); // delete all fingerprints from database
+    }
 }

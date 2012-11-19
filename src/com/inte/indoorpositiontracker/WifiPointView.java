@@ -36,6 +36,7 @@ public class WifiPointView extends View {
 		mVisible = true;
 		mRadius = 10f;
 		mLocation = new PointF(0,0);
+		mFingerprint = null;
 	}
 	
 	@Override
@@ -94,5 +95,13 @@ public class WifiPointView extends View {
 	
 	public boolean isVisible() {
 	    return mVisible;
+	}
+	
+	public boolean isBindToFingerprint() {
+	    if(mFingerprint == null) {
+	        return false;
+	    }
+	    
+	    return true;
 	}
 }

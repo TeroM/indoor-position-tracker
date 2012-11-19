@@ -32,13 +32,15 @@ public class MapEditActivity extends MapActivity {
     
     private boolean mShowFingerprints = true;
     
+    private IndoorPositionTracker mApplication;
+    
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        IndoorPositionTracker application = (IndoorPositionTracker) getApplication();
-        ArrayList<Fingerprint> fingerprints = application.getFingerprintData();
+        mApplication = (IndoorPositionTracker) getApplication();
+        ArrayList<Fingerprint> fingerprints = mApplication.getFingerprintData();
         
         for(Fingerprint fingerprint : fingerprints) {
             mMap.createNewWifiPointOnMap(fingerprint, mShowFingerprints);
@@ -92,8 +94,8 @@ public class MapEditActivity extends MapActivity {
                     f.setLocation(mPointer.getLocation());
                     mMap.createNewWifiPointOnMap(f, mShowFingerprints);
                     
-                    IndoorPositionTracker application = (IndoorPositionTracker) getApplication();
-                    application.addFingerprint(f);
+                    mApplication = (IndoorPositionTracker) getApplication();
+                    mApplication.addFingerprint(f);
                     mLoadingDialog.dismiss();
                 }
             } else {
@@ -134,7 +136,8 @@ public class MapEditActivity extends MapActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         //getMenuInflater().inflate(R.menu.activity_main, menu);    
         menu.add(1, 1, 0, "EXIT EDIT MODE");
-        menu.add(1, 2, 2, (mShowFingerprints ? "HIDE FINGERPRINTS" : "SHOW FINGERPRINTS"));
+        menu.add(1, 2, 1, (mShowFingerprints ? "HIDE FINGERPRINTS" : "SHOW FINGERPRINTS"));
+        menu.add(1, 3, 2, "DELETE ALL FINGERPRINTS");
         return true;
     }
     
@@ -148,6 +151,9 @@ public class MapEditActivity extends MapActivity {
             case 2:
                 setFingerprintVisibility(!mShowFingerprints);
                 item.setTitle(mShowFingerprints ? "HIDE FINGERPRINTS" : "SHOW FINGERPRINTS");
+                return true;
+            case 3:
+                deleteAllFingerprints();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -183,5 +189,10 @@ public class MapEditActivity extends MapActivity {
         }
         
         refreshMap();
+    }
+    
+    public void deleteAllFingerprints() {
+        mMap.deleteFingerprints();
+        mApplication.deleteAllFingerprints();
     }
 }
