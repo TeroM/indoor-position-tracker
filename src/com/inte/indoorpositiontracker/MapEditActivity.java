@@ -7,7 +7,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeSet;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.graphics.PointF;
 import android.net.wifi.ScanResult;
 import android.os.Bundle;
@@ -130,7 +132,6 @@ public class MapEditActivity extends MapActivity {
                         mMap.setWifiPointViewPosition(mPointer, location);
                     }
                     refreshMap(); // redraw map
-                    startScan(); // show loading dialog and start wifi scan
                 }
                 break;
         }
@@ -139,10 +140,11 @@ public class MapEditActivity extends MapActivity {
     }
     
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) { 
-        menu.add(1, 1, 0, "EXIT EDIT MODE");
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add(1, 1, 0, "SCAN");
         menu.add(1, 2, 1, (mShowFingerprints ? "HIDE FINGERPRINTS" : "SHOW FINGERPRINTS"));
         menu.add(1, 3, 2, "DELETE ALL FINGERPRINTS");
+        menu.add(1, 4, 3, "EXIT EDIT MODE");
         return true;
     }
     
@@ -150,8 +152,14 @@ public class MapEditActivity extends MapActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
-            case 1: // exit edit mode
-                finish();
+            case 1: // start scan
+                if(mPointer == null) {
+                    // notify user that UI pointer must be positioned first before the scan can be started
+                    Toast.makeText(getApplicationContext(), "Failed to start scan. Tap on the map first" +
+                    		" to place the position marker.", Toast.LENGTH_LONG).show();
+                } else {
+                    startScan(); // show loading dialog and start wifi scan
+                }
                 return true;
             case 2: // show/hide fingerprints
                 setFingerprintVisibility(!mShowFingerprints);
@@ -159,6 +167,9 @@ public class MapEditActivity extends MapActivity {
                 return true;
             case 3: // delete all fingerprints (from screen and database)
                 deleteAllFingerprints();
+                return true;
+            case 4: // exit edit mode
+                finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -197,7 +208,28 @@ public class MapEditActivity extends MapActivity {
     }
     
     public void deleteAllFingerprints() {
-        mMap.deleteFingerprints(); // delete fingerprints from the screen
-        mApplication.deleteAllFingerprints(); // delete fingerprints from the database
+        // create alert dialog and delete all fingerprints only after user has confirmed he wants to delete them
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setTitle("Are you sure?");
+        alertDialogBuilder.setMessage("Are sure you want to delete all fingerprints?");
+        
+        // add yes button to dialog
+        alertDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog,int id) {
+                mMap.deleteFingerprints(); // delete fingerprints from the screen
+                mApplication.deleteAllFingerprints(); // delete fingerprints from the database
+            }
+        });
+        
+        // add no button to dialog
+        alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog,int id) {
+                dialog.cancel(); // close the dialog and do nothing
+            }
+        });
+
+        // create the dialog and show it
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 }
