@@ -16,11 +16,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 public class MapViewActivity extends MapActivity {
-	
-	MapView image;
-	
+    private static final int MENU_ITEM_EDIT_MAP = 21;
+    
     public static final int SCAN_DELAY = 1000; // delay for the first scan (milliseconds)
-    public static final int SCAN_INTERVAL = 2000; // interval between scans (milliseconds)
+    public static final int SCAN_INTERVAL = 1000; // interval between scans (milliseconds)
     public static final int MAX_SCAN_THREADS = 2; // max amount of simultaneus scans
     
     private int mScanThreadCount = 0;
@@ -55,8 +54,6 @@ public class MapViewActivity extends MapActivity {
         mLocationPointer = mMap.createNewWifiPointOnMap(new PointF(-1000, -1000));
         mLocationPointer.activate();
         
-        image = (MapView) findViewById(R.id.mapView);
-        
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
 
@@ -85,7 +82,7 @@ public class MapViewActivity extends MapActivity {
     @Override
     public void onReceiveWifiScanResults(final List<ScanResult> results) {
         IndoorPositionTracker application = (IndoorPositionTracker) getApplication();
-        final ArrayList<Fingerprint> fingerprints = application.getFingerprintData();
+        final ArrayList<Fingerprint> fingerprints = application.getFingerprintData(mSelectedMap);
         
         // calculating the location might take some time in case there are a lot of fingerprints (>10000),
         // so it's reasonable to limit scan thread count to make sure there are not too many of these threads
@@ -143,13 +140,10 @@ public class MapViewActivity extends MapActivity {
     }
     
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {   
-        menu.add(1, 1, 0, "EDIT MAP"); 
-        menu.add(1, 2, 1, "BASEMENT");
-        menu.add(1, 3, 2, "1. FLOOR");
-        menu.add(1, 4, 3, "2. FLOOR");
-        menu.add(1, 5, 4, "3. FLOOR");
-        menu.add(1, 6, 5, "4. FLOOR");
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // add menu items
+        super.onCreateOptionsMenu(menu); // items for changing map
+        menu.add(Menu.NONE, MENU_ITEM_EDIT_MAP, Menu.NONE, "EDIT MAP"); 
         return true;
     }
     
@@ -157,27 +151,11 @@ public class MapViewActivity extends MapActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
-            case 1:
-                startMapEditActivity(); // start map edit mode
+            case MENU_ITEM_EDIT_MAP: // start map edit mode
+                startMapEditActivity();
                 return true;
-            case 2:
-            	image.setImageResource(R.drawable.pohja);
-                return true;
-            case 3:
-            	image.setImageResource(R.drawable.kerros);
-                return true;
-            case 4:
-            	image.setImageResource(R.drawable.toka);
-                return true;
-            case 5:
-            	image.setImageResource(R.drawable.kolmas);
-                return true;
-            case 6:
-            	image.setImageResource(R.drawable.neljas);
-                return true;
-            default:
+        default: // change map
                 return super.onOptionsItemSelected(item);
         }
     }
-
 }

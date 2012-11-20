@@ -10,14 +10,27 @@ import android.content.IntentFilter;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 
 public class MapActivity extends Activity implements OnTouchListener {
+    private static final int MENU_ITEM_BASEMENT = 1;
+    private static final int MENU_ITEM_1STFLOOR = 2;
+    private static final int MENU_ITEM_2NDFLOOR = 3;
+    private static final int MENU_ITEM_3RDFLOOR = 4;
+    private static final int MENU_ITEM_4THFLOOR = 5;
+    
+    
     protected WifiManager mWifi;
     protected MapView mMap; // map object
-    private BroadcastReceiver mReceiver; // for receiving wifi scan results
+    protected BroadcastReceiver mReceiver; // for receiving wifi scan results
+    protected IndoorPositionTracker mApplication;
+    
+    protected String mSelectedMap; // id of the map which is currently being displayed
+    
     
     
     
@@ -30,9 +43,10 @@ public class MapActivity extends Activity implements OnTouchListener {
         mMap = (MapView) findViewById(R.id.mapView);
         mMap.setOnTouchListener(this);
         
-        
+        mApplication = (IndoorPositionTracker) getApplication();
         mWifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
         
+        this.setMap(R.drawable.kerros); // set map to default location (== first floor)
     }
     
     public void onStart() {
@@ -68,8 +82,48 @@ public class MapActivity extends Activity implements OnTouchListener {
         super.onStop();
     }
     
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // add menu items
+        menu.add(Menu.NONE, MENU_ITEM_BASEMENT, Menu.NONE, "BASEMENT");
+        menu.add(Menu.NONE, MENU_ITEM_1STFLOOR, Menu.NONE, "1. FLOOR");
+        menu.add(Menu.NONE, MENU_ITEM_2NDFLOOR, Menu.NONE, "2. FLOOR");
+        menu.add(Menu.NONE, MENU_ITEM_3RDFLOOR, Menu.NONE, "3. FLOOR");
+        menu.add(Menu.NONE, MENU_ITEM_4THFLOOR, Menu.NONE, "4. FLOOR");
+        return true;
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case MENU_ITEM_BASEMENT:
+                setMap(R.drawable.pohja);
+                return true;
+            case MENU_ITEM_1STFLOOR:
+                setMap(R.drawable.kerros);
+                return true;
+            case MENU_ITEM_2NDFLOOR:
+                setMap(R.drawable.toka);
+                return true;
+            case MENU_ITEM_3RDFLOOR:
+                setMap(R.drawable.kolmas);
+                return true;
+            case MENU_ITEM_4THFLOOR:
+                setMap(R.drawable.neljas);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+    
     public void refreshMap() {
         mMap.invalidate(); // redraws the map screen
+    }
+    
+    public void setMap(int resId) {
+        mSelectedMap = String.valueOf(resId);
+        mMap.setImageResource(resId); // change map image
     }
 }
 

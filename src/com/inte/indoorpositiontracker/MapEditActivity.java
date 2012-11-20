@@ -20,6 +20,11 @@ import android.view.View;
 import android.widget.Toast;
 
 public class MapEditActivity extends MapActivity {
+    private static final int MENU_ITEM_SCAN = 31;
+    private static final int MENU_ITEM_SHOW_FINGERPRINTS = 32;
+    private static final int MENU_ITEM_DELETE_FINGERPRINTS = 33;
+    private static final int MENU_ITEM_EXIT = 34;
+    
     private static final int MIN_SCAN_COUNT = 3; // minimum amount of scans required the scan to be successful
     private static final int SCAN_COUNT = 3; // how many scans will be done for calculating average for scan results
     private static final int SCAN_INTERVAL = 500; // interval between scans (milliseconds)
@@ -37,8 +42,6 @@ public class MapEditActivity extends MapActivity {
     
     private boolean mShowFingerprints = true;
     
-    private IndoorPositionTracker mApplication;
-    
     
     
     /** INSTANCE METHODS */
@@ -46,14 +49,6 @@ public class MapEditActivity extends MapActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
-        mApplication = (IndoorPositionTracker) getApplication();
-        ArrayList<Fingerprint> fingerprints = mApplication.getFingerprintData(); // load fingerprints from the database
-        
-        // add WifiPointViews on map with fingerprint data loaded from the database
-        for(Fingerprint fingerprint : fingerprints) {
-            mMap.createNewWifiPointOnMap(fingerprint, mShowFingerprints);
-        }
     }
     
     @Override
@@ -97,7 +92,7 @@ public class MapEditActivity extends MapActivity {
                         mMeasurements.put(key, value);
                     }
                     
-                    Fingerprint f = new Fingerprint(mMeasurements); // create fingerprint with the calculated measurement averages
+                    Fingerprint f = new Fingerprint(mMeasurements, mSelectedMap); // create fingerprint with the calculated measurement averages
                     f.setLocation(mPointer.getLocation()); // set the fingerprint to UI pointer location
                     mMap.createNewWifiPointOnMap(f, mShowFingerprints); // add to map UI
                     
@@ -141,10 +136,12 @@ public class MapEditActivity extends MapActivity {
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(1, 1, 0, "SCAN");
-        menu.add(1, 2, 1, (mShowFingerprints ? "HIDE FINGERPRINTS" : "SHOW FINGERPRINTS"));
-        menu.add(1, 3, 2, "DELETE ALL FINGERPRINTS");
-        menu.add(1, 4, 3, "EXIT EDIT MODE");
+        // add menu items
+        menu.add(Menu.NONE, MENU_ITEM_SCAN, Menu.NONE, "SCAN");
+        menu.add(Menu.NONE, MENU_ITEM_SHOW_FINGERPRINTS, Menu.NONE, (mShowFingerprints ? "HIDE FINGERPRINTS" : "SHOW FINGERPRINTS"));
+        menu.add(Menu.NONE, MENU_ITEM_DELETE_FINGERPRINTS, Menu.NONE, "DELETE ALL FINGERPRINTS");
+        menu.add(Menu.NONE, MENU_ITEM_EXIT, Menu.NONE, "EXIT EDIT MODE");
+        super.onCreateOptionsMenu(menu); // items for changing map
         return true;
     }
     
@@ -152,7 +149,7 @@ public class MapEditActivity extends MapActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
-            case 1: // start scan
+            case MENU_ITEM_SCAN: // start scan
                 if(mPointer == null) {
                     // notify user that UI pointer must be positioned first before the scan can be started
                     Toast.makeText(getApplicationContext(), "Failed to start scan. Tap on the map first" +
@@ -161,17 +158,17 @@ public class MapEditActivity extends MapActivity {
                     startScan(); // show loading dialog and start wifi scan
                 }
                 return true;
-            case 2: // show/hide fingerprints
+            case MENU_ITEM_SHOW_FINGERPRINTS: // show/hide fingerprints
                 setFingerprintVisibility(!mShowFingerprints);
                 item.setTitle(mShowFingerprints ? "HIDE FINGERPRINTS" : "SHOW FINGERPRINTS");
                 return true;
-            case 3: // delete all fingerprints (from screen and database)
+            case MENU_ITEM_DELETE_FINGERPRINTS: // delete all fingerprints (from screen and database)
                 deleteAllFingerprints();
                 return true;
-            case 4: // exit edit mode
+            case MENU_ITEM_EXIT: // exit edit mode
                 finish();
                 return true;
-            default:
+            default: // change map
                 return super.onOptionsItemSelected(item);
         }
     }
@@ -217,7 +214,7 @@ public class MapEditActivity extends MapActivity {
         alertDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog,int id) {
                 mMap.deleteFingerprints(); // delete fingerprints from the screen
-                mApplication.deleteAllFingerprints(); // delete fingerprints from the database
+                mApplication.deleteAllFingerprints(mSelectedMap); // delete fingerprints from the database
             }
         });
         
@@ -231,5 +228,19 @@ public class MapEditActivity extends MapActivity {
         // create the dialog and show it
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
+    }
+    
+    @Override
+    public void setMap(int resId) {
+        super.setMap(resId);
+        mMap.deleteFingerprints(); // clear screen from fingerprints
+        
+        ArrayList<Fingerprint> fingerprints = mApplication.getFingerprintData(mSelectedMap); // load fingerprints from the database
+        
+        // add WifiPointViews on map with fingerprint data loaded from the database
+        for(Fingerprint fingerprint : fingerprints) {
+            mMap.createNewWifiPointOnMap(fingerprint, mShowFingerprints);
+        }
+        
     }
 }

@@ -25,6 +25,12 @@ public class Fingerprint {
 	    this();
 	    mMeasurements = measurements;
 	}
+	
+   public Fingerprint(HashMap<String, Integer> measurements, String map) {
+        this(measurements);
+        mMap = map;
+    }
+	
 	public Fingerprint(int id, String map, PointF location) {
 	    this();
 		mLocation = location;
