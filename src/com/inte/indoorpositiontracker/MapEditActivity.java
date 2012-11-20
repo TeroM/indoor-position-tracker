@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeSet;
-
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -14,6 +13,7 @@ import android.graphics.PointF;
 import android.net.wifi.ScanResult;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.SubMenu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -138,8 +138,11 @@ public class MapEditActivity extends MapActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // add menu items
         menu.add(Menu.NONE, MENU_ITEM_SCAN, Menu.NONE, "SCAN");
-        menu.add(Menu.NONE, MENU_ITEM_SHOW_FINGERPRINTS, Menu.NONE, (mShowFingerprints ? "HIDE FINGERPRINTS" : "SHOW FINGERPRINTS"));
-        menu.add(Menu.NONE, MENU_ITEM_DELETE_FINGERPRINTS, Menu.NONE, "DELETE ALL FINGERPRINTS");
+        
+        SubMenu sub = menu.addSubMenu(0,1,0, "FINGERPRINTS");
+        sub.add(Menu.NONE, MENU_ITEM_SHOW_FINGERPRINTS, Menu.NONE, (mShowFingerprints ? "HIDE FINGERPRINTS" : "SHOW FINGERPRINTS"));
+        sub.add(Menu.NONE, MENU_ITEM_DELETE_FINGERPRINTS, Menu.NONE, "DELETE ALL FINGERPRINTS");
+   
         menu.add(Menu.NONE, MENU_ITEM_EXIT, Menu.NONE, "EXIT EDIT MODE");
         super.onCreateOptionsMenu(menu); // items for changing map
         return true;

@@ -11,6 +11,7 @@ import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.SubMenu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -85,11 +86,15 @@ public class MapActivity extends Activity implements OnTouchListener {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // add menu items
-        menu.add(Menu.NONE, MENU_ITEM_BASEMENT, Menu.NONE, "BASEMENT");
-        menu.add(Menu.NONE, MENU_ITEM_1STFLOOR, Menu.NONE, "1. FLOOR");
-        menu.add(Menu.NONE, MENU_ITEM_2NDFLOOR, Menu.NONE, "2. FLOOR");
-        menu.add(Menu.NONE, MENU_ITEM_3RDFLOOR, Menu.NONE, "3. FLOOR");
-        menu.add(Menu.NONE, MENU_ITEM_4THFLOOR, Menu.NONE, "4. FLOOR");
+    	
+    	super.onCreateOptionsMenu(menu);
+    	SubMenu sub = menu.addSubMenu(0,1,0, "Choose Floor");
+    	
+    	sub.add(Menu.NONE, MENU_ITEM_BASEMENT, Menu.NONE, "BASEMENT");
+    	sub.add(Menu.NONE, MENU_ITEM_1STFLOOR, Menu.NONE, "1. FLOOR");
+    	sub.add(Menu.NONE, MENU_ITEM_2NDFLOOR, Menu.NONE, "2. FLOOR");
+    	sub.add(Menu.NONE, MENU_ITEM_3RDFLOOR, Menu.NONE, "3. FLOOR");
+    	sub.add(Menu.NONE, MENU_ITEM_4THFLOOR, Menu.NONE, "4. FLOOR");
         return true;
     }
     
