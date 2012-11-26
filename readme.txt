@@ -1,3 +1,4 @@
+Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
 .___            .___                                    
 |   | ____    __| _/____   ___________                  
 |   |/    \  / __ |/  _ \ /  _ \_  __ \  ______         
