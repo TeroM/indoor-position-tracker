@@ -18,11 +18,12 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 
 public class MapActivity extends Activity implements OnTouchListener {
-    private static final int MENU_ITEM_BASEMENT = 1;
-    private static final int MENU_ITEM_1STFLOOR = 2;
-    private static final int MENU_ITEM_2NDFLOOR = 3;
-    private static final int MENU_ITEM_3RDFLOOR = 4;
-    private static final int MENU_ITEM_4THFLOOR = 5;
+    private static final int MENU_ITEM_CHOOSE_FLOOR = 1;
+    private static final int MENU_ITEM_BASEMENT = 2;
+    private static final int MENU_ITEM_1STFLOOR = 3;
+    private static final int MENU_ITEM_2NDFLOOR = 4;
+    private static final int MENU_ITEM_3RDFLOOR = 5;
+    private static final int MENU_ITEM_4THFLOOR = 6;
     
     
     protected WifiManager mWifi;
@@ -45,6 +46,7 @@ public class MapActivity extends Activity implements OnTouchListener {
         mMap.setOnTouchListener(this);
         
         mApplication = (IndoorPositionTracker) getApplication();
+        mApplication.loadFingerprintsFromDatabase();
         mWifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
         
         this.setMap(R.drawable.kerros); // set map to default location (== first floor)
@@ -88,13 +90,13 @@ public class MapActivity extends Activity implements OnTouchListener {
         // add menu items
     	
     	super.onCreateOptionsMenu(menu);
-    	SubMenu sub = menu.addSubMenu(0,1,0, "Choose Floor");
+    	SubMenu sub = menu.addSubMenu(Menu.NONE, MENU_ITEM_CHOOSE_FLOOR, Menu.NONE, "Choose floor");
     	
-    	sub.add(Menu.NONE, MENU_ITEM_BASEMENT, Menu.NONE, "BASEMENT");
-    	sub.add(Menu.NONE, MENU_ITEM_1STFLOOR, Menu.NONE, "1. FLOOR");
-    	sub.add(Menu.NONE, MENU_ITEM_2NDFLOOR, Menu.NONE, "2. FLOOR");
-    	sub.add(Menu.NONE, MENU_ITEM_3RDFLOOR, Menu.NONE, "3. FLOOR");
-    	sub.add(Menu.NONE, MENU_ITEM_4THFLOOR, Menu.NONE, "4. FLOOR");
+    	sub.add(Menu.NONE, MENU_ITEM_BASEMENT, Menu.NONE, "Basement");
+    	sub.add(Menu.NONE, MENU_ITEM_1STFLOOR, Menu.NONE, "1. floor");
+    	sub.add(Menu.NONE, MENU_ITEM_2NDFLOOR, Menu.NONE, "2. floor");
+    	sub.add(Menu.NONE, MENU_ITEM_3RDFLOOR, Menu.NONE, "3. floor");
+    	sub.add(Menu.NONE, MENU_ITEM_4THFLOOR, Menu.NONE, "4. floor");
         return true;
     }
     

@@ -12,8 +12,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.PointF;
 
 public class FingerprintDatabaseHandler extends SQLiteOpenHelper{
-    private static final int DATABASE_VERSION = 1;
-    private static final String DATABASE_NAME = "fingerprints";
+    public static final int DATABASE_VERSION = 1;
+    public static final String DATABASE_NAME = "fingerprints";
     private static final String TABLE_MEASUREMENTS = "measurements";
     private static final String TABLE_FINGERPRINTS = "fingerprints";
  
@@ -185,10 +185,11 @@ public class FingerprintDatabaseHandler extends SQLiteOpenHelper{
         String COUNT_QUERY = "SELECT  * FROM " + TABLE_FINGERPRINTS;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(COUNT_QUERY, null); // SQL query
+        int count = cursor.getCount();
+        
         cursor.close();
- 
         db.close();
-        return cursor.getCount();
+        return count;
     }
      
     public void deleteFingerprint(Fingerprint fingerprint) {

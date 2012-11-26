@@ -6,24 +6,27 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeSet;
+
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.PointF;
 import android.net.wifi.ScanResult;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.SubMenu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.SubMenu;
 import android.view.View;
 import android.widget.Toast;
 
 public class MapEditActivity extends MapActivity {
     private static final int MENU_ITEM_SCAN = 31;
-    private static final int MENU_ITEM_SHOW_FINGERPRINTS = 32;
-    private static final int MENU_ITEM_DELETE_FINGERPRINTS = 33;
-    private static final int MENU_ITEM_EXIT = 34;
+    private static final int MENU_ITEM_FINGERPRINTS = 32;
+    private static final int MENU_ITEM_SHOW_FINGERPRINTS = 33;
+    private static final int MENU_ITEM_DELETE_FINGERPRINTS = 34;
+    private static final int MENU_ITEM_EXIT = 35;
     
     private static final int MIN_SCAN_COUNT = 3; // minimum amount of scans required the scan to be successful
     private static final int SCAN_COUNT = 3; // how many scans will be done for calculating average for scan results
@@ -49,6 +52,12 @@ public class MapEditActivity extends MapActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        Intent intent = getIntent();
+        String floor = intent.getStringExtra(MapViewActivity.EXTRA_MESSAGE_FLOOR);
+        setMap(Integer.valueOf(floor));
+        
+        setTitle(getTitle() + " (edit mode)");
     }
     
     @Override
@@ -137,13 +146,13 @@ public class MapEditActivity extends MapActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // add menu items
-        menu.add(Menu.NONE, MENU_ITEM_SCAN, Menu.NONE, "SCAN");
+        menu.add(Menu.NONE, MENU_ITEM_SCAN, Menu.NONE, "Scan");
         
-        SubMenu sub = menu.addSubMenu(0,1,0, "FINGERPRINTS");
-        sub.add(Menu.NONE, MENU_ITEM_SHOW_FINGERPRINTS, Menu.NONE, (mShowFingerprints ? "HIDE FINGERPRINTS" : "SHOW FINGERPRINTS"));
-        sub.add(Menu.NONE, MENU_ITEM_DELETE_FINGERPRINTS, Menu.NONE, "DELETE ALL FINGERPRINTS");
+        SubMenu sub = menu.addSubMenu(Menu.NONE, MENU_ITEM_FINGERPRINTS, Menu.NONE, "Fingerprints");
+        sub.add(Menu.NONE, MENU_ITEM_SHOW_FINGERPRINTS, Menu.NONE, (mShowFingerprints ? "Hide fingerprints" : "Show fingerprints"));
+        sub.add(Menu.NONE, MENU_ITEM_DELETE_FINGERPRINTS, Menu.NONE, "Delete all fingerprints");
    
-        menu.add(Menu.NONE, MENU_ITEM_EXIT, Menu.NONE, "EXIT EDIT MODE");
+        menu.add(Menu.NONE, MENU_ITEM_EXIT, Menu.NONE, "Exit edit mode");
         super.onCreateOptionsMenu(menu); // items for changing map
         return true;
     }
@@ -163,7 +172,7 @@ public class MapEditActivity extends MapActivity {
                 return true;
             case MENU_ITEM_SHOW_FINGERPRINTS: // show/hide fingerprints
                 setFingerprintVisibility(!mShowFingerprints);
-                item.setTitle(mShowFingerprints ? "HIDE FINGERPRINTS" : "SHOW FINGERPRINTS");
+                item.setTitle(mShowFingerprints ? "Hide fingerprints" : "Show fingerprints");
                 return true;
             case MENU_ITEM_DELETE_FINGERPRINTS: // delete all fingerprints (from screen and database)
                 deleteAllFingerprints();

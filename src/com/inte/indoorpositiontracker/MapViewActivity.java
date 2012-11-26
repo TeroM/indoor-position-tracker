@@ -16,6 +16,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 public class MapViewActivity extends MapActivity {
+    public final static String EXTRA_MESSAGE_FLOOR = "com.inte.indoorpositiontracker.FLOOR";
+    
     private static final int MENU_ITEM_EDIT_MAP = 21;
     
     public static final int SCAN_DELAY = 1000; // delay for the first scan (milliseconds)
@@ -136,6 +138,7 @@ public class MapViewActivity extends MapActivity {
     
     public void startMapEditActivity() {
         Intent intent = new Intent(MapViewActivity.this, MapEditActivity.class);
+        intent.putExtra(EXTRA_MESSAGE_FLOOR, mSelectedMap);
         startActivity(intent); // start map edit mode
     }
     
@@ -143,7 +146,7 @@ public class MapViewActivity extends MapActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // add menu items
         super.onCreateOptionsMenu(menu); // items for changing map
-        menu.add(Menu.NONE, MENU_ITEM_EDIT_MAP, Menu.NONE, "EDIT MAP"); 
+        menu.add(Menu.NONE, MENU_ITEM_EDIT_MAP, Menu.NONE, "Edit map"); 
         return true;
     }
     

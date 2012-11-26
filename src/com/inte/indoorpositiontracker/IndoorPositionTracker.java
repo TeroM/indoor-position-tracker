@@ -17,7 +17,7 @@ public class IndoorPositionTracker extends Application {
     public void onCreate() {
         super.onCreate();
         mFingerprints = new ArrayList<Fingerprint>();
-        //deleteDatabase("fingerprints"); 
+        //deleteDatabase(FingerprintDatabaseHandler.DATABASE_NAME); 
         mFingerprintDatabaseHandler = new FingerprintDatabaseHandler(this);
         loadFingerprintsFromDatabase();
     }
