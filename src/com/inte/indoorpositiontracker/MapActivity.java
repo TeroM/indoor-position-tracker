@@ -46,7 +46,6 @@ public class MapActivity extends Activity implements OnTouchListener {
         mMap.setOnTouchListener(this);
         
         mApplication = (IndoorPositionTracker) getApplication();
-        mApplication.loadFingerprintsFromDatabase();
         mWifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
         
         this.setMap(R.drawable.kerros); // set map to default location (== first floor)
