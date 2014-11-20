@@ -34,6 +34,7 @@ public class Fingerprint {
 	public Fingerprint(int id, String map, PointF location) {
 	    this();
 		mLocation = location;
+		mMap = map;       // Add this line
 	}
 	
 	public Fingerprint(int id, String map, PointF location, HashMap<String, Integer> measurements) {
